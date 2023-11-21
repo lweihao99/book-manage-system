@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React, { PropsWithChildren, ReactNode } from "react";
 import Image from "next/image";
 import Head from "next/head";
 import {
@@ -96,7 +96,7 @@ const ITEMS = [
 const USER_ITEMS: MenuProps["items"] = [
   {
     key: "1",
-    label: "User Center",
+    label: "Profile Details",
   },
   {
     key: "2",
@@ -104,7 +104,8 @@ const USER_ITEMS: MenuProps["items"] = [
   },
 ];
 
-export function Layout({ children }: { children: ReactNode }) {
+// export function Layout({ children }: { children: ReactNode }) {
+export const Layout: React.FC<PropsWithChildren> = ({ children }) => {
   const router = useRouter();
 
   // 定义这是Menu的一个方法
@@ -114,7 +115,7 @@ export function Layout({ children }: { children: ReactNode }) {
     keyPath,
     domEvent,
   }) => {
-    router.push(key);
+    router.push(key); // 跳转到key路由
   };
 
   return (
@@ -141,7 +142,7 @@ export function Layout({ children }: { children: ReactNode }) {
               <Dropdown menu={{ items: USER_ITEMS }}>
                 <a onClick={(e) => e.preventDefault()}>
                   <Space>
-                    User
+                    Profile
                     <DownOutlined />
                   </Space>
                 </a>
@@ -167,4 +168,4 @@ export function Layout({ children }: { children: ReactNode }) {
       </main>
     </>
   );
-}
+};
