@@ -1,0 +1,31 @@
+/* module.css 是给css 文件添加hash值，这样css的名字就不会重复，样式也不会覆盖，不需要想类名 */
+.header {
+  background-color: #fff;
+  font-size: 12px;
+  color: #4b7bd7;
+  font-weight: bold;
+}
+
+.logo {
+  margin-right: 8px;
+}
+
+.user {
+  float: right;
+  font-weight: normal;
+  font-size: 16px;
+}
+
+.sectionInner {
+  height: calc(100vh - 64px);
+}
+
+.sectionContent {
+  padding: 32px;
+}
+
+.content {
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 24px;
+}
