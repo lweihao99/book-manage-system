@@ -8,134 +8,72 @@ import {
   Space,
   Table,
   TablePaginationConfig,
+  Image,
+  Tooltip,
 } from "antd";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+import dayjs from "dayjs";
 
 import styles from "./index.module.css";
-
-const dataSource = [
-  {
-    key: "1",
-    name: "胡彦斌",
-    age: 32,
-    address: "西湖区湖底公园1号",
-  },
-  {
-    key: "2",
-    name: "胡彦祖",
-    age: 42,
-    address: "西湖区湖底公园1号",
-  },
-  {
-    key: "1",
-    name: "胡彦斌",
-    age: 32,
-    address: "西湖区湖底公园1号",
-  },
-  {
-    key: "2",
-    name: "胡彦祖",
-    age: 42,
-    address: "西湖区湖底公园1号",
-  },
-  {
-    key: "1",
-    name: "胡彦斌",
-    age: 32,
-    address: "西湖区湖底公园1号",
-  },
-  {
-    key: "2",
-    name: "胡彦祖",
-    age: 42,
-    address: "西湖区湖底公园1号",
-  },
-  {
-    key: "1",
-    name: "胡彦斌",
-    age: 32,
-    address: "西湖区湖底公园1号",
-  },
-  {
-    key: "2",
-    name: "胡彦祖",
-    age: 42,
-    address: "西湖区湖底公园1号",
-  },
-  {
-    key: "1",
-    name: "胡彦斌",
-    age: 32,
-    address: "西湖区湖底公园1号",
-  },
-  {
-    key: "2",
-    name: "胡彦祖",
-    age: 42,
-    address: "西湖区湖底公园1号",
-  },
-  {
-    key: "1",
-    name: "胡彦斌",
-    age: 32,
-    address: "西湖区湖底公园1号",
-  },
-  {
-    key: "2",
-    name: "胡彦祖",
-    age: 42,
-    address: "西湖区湖底公园1号",
-  },
-  {
-    key: "1",
-    name: "胡彦斌",
-    age: 32,
-    address: "西湖区湖底公园1号",
-  },
-  {
-    key: "2",
-    name: "胡彦祖",
-    age: 42,
-    address: "西湖区湖底公园1号",
-  },
-];
+import { getBookList } from "@/apis/book";
+import { BookQueryType } from "@/type";
 
 const COLUMNS = [
   {
     title: "Name",
     dataIndex: "name",
     key: "name",
+    width: 200,
   },
   {
     title: "Image",
-    dataIndex: "age",
-    key: "age",
+    dataIndex: "cover",
+    key: "cover",
+    width: 120,
+    render: (text: string) => {
+      return <Image width={100} src={text} alt="" />;
+    },
   },
   {
     title: "author",
-    dataIndex: "address",
-    key: "address",
+    dataIndex: "author",
+    key: "author",
+    width: 120,
   },
   {
     title: "category",
-    dataIndex: "name",
-    key: "name",
+    dataIndex: "category",
+    key: "category",
+    width: 80,
   },
   {
     title: "description",
     dataIndex: "description",
     key: "description",
+    ellipsis: true, // 多出的变为省略号
+    width: 200,
+    render: (text: string) => {
+      return (
+        <Tooltip title={text} placement="topLeft">
+          {text}
+        </Tooltip>
+      );
+    },
   },
   {
     title: "stock",
     dataIndex: "stock",
     key: "stock",
+    width: 80,
   },
   {
     title: "Publication Date",
-    dataIndex: "date",
-    key: "date",
+    dataIndex: "publishAt",
+    key: "publishAt",
+    width: 130,
+    render: (text: string) => dayjs(text).format("YYYY-MM-DD"),
   },
 ];
 
@@ -143,7 +81,12 @@ export default function Home() {
   // 拿到form的实例，并绑定在表单上
   const [form] = Form.useForm();
   const router = useRouter();
-  const [pagination, setPagination] = useState({
+
+  // 跟踪获取的数据
+  const [data, setData] = useState([]);
+
+  // 跟踪每一页元素的情况,并且useState通过TablePaginationConfig指定了状态变量类型
+  const [pagination, setPagination] = useState<TablePaginationConfig>({
     current: 1,
     pageSize: 20, // 每页显示的元素
     showSizeChanger: true, //改变每页pageSize
@@ -151,22 +94,54 @@ export default function Home() {
   });
   const [total, setTotal] = useState(0);
 
-  const handleSearchFinish = (values) => {
-    console.log(values);
+  useEffect(() => {
+    async function fetchData() {
+      const res = await getBookList({
+        current: 1,
+        pageSize: pagination.pageSize,
+      });
+
+      const { data } = res;
+      setData(data);
+    }
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // search点击之后
+  const handleSearchFinish = async (values: BookQueryType) => {
+    // 拿到搜索表单的值并进行请求
+    const res = await getBookList({
+      ...values,
+      current: 1,
+      pageSize: pagination.pageSize,
+    });
+    console.log(res.data);
+    setData(res.data);
+    setPagination({ ...pagination, current: 1, total: res.total });
   };
 
+  // submit之后，初始化输入框
   const handleSearchReset = () => {
-    console.log(form);
     form.resetFields(); // initialValues
   };
 
+  // 点击Edit之后，执行路由
   const handleBookEdit = () => {
     router.push("/book/edit/id");
   };
 
   const handleTableChange = (pagination: TablePaginationConfig) => {
-    console.log(pagination);
     setPagination(pagination);
+
+    const query = form.getFieldValue();
+
+    // 页面发生变化后重新获取
+    getBookList({
+      current: pagination.current,
+      pageSize: pagination.pageSize,
+      ...query,
+    });
   };
 
   const columns = [
@@ -244,7 +219,7 @@ export default function Home() {
       </Form>
       <div className={styles.tableWrap}>
         <Table
-          dataSource={dataSource}
+          dataSource={data}
           columns={columns}
           scroll={{ x: 1000 }}
           onChange={handleTableChange}
