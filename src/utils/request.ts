@@ -2,6 +2,7 @@ import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import Router from "next/router";
 import { message as AntdMessage } from "antd";
 
+// 定义接口，并扩展了axios库中的AxiosInstance的接口，对Axios实例进行了定制.
 interface AxiosInstanceType extends AxiosInstance {
   get<T = any>(url: string, config?: AxiosRequestConfig): Promise<T>;
   delete<T = any>(url: string, config?: AxiosRequestConfig): Promise<T>;
@@ -24,6 +25,7 @@ interface AxiosInstanceType extends AxiosInstance {
   ): Promise<T>;
 }
 
+// 进行请求的定制，并进行指定拦截
 const CreateAxiosInstance = (
   config?: AxiosRequestConfig
 ): AxiosInstanceType => {
@@ -33,6 +35,7 @@ const CreateAxiosInstance = (
     ...config, //继承
   });
 
+  // 请求拦截器
   instance.interceptors.request.use(
     function (config) {
       return config;
@@ -42,7 +45,7 @@ const CreateAxiosInstance = (
     }
   );
 
-  // 接口请求成功或失败触发
+  // 接口请求成功或失败触发，响应拦截器
   instance.interceptors.response.use(
     function (response) {
       // 是否已经登录，是否成功

@@ -19,6 +19,7 @@ import dayjs from "dayjs";
 import styles from "./index.module.css";
 import { getBookList } from "@/apis/book";
 import { BookQueryType } from "@/type";
+import Content from "@/components/Content";
 
 const COLUMNS = [
   {
@@ -164,8 +165,21 @@ export default function Home() {
     },
   ];
 
+  // 页面
   return (
-    <>
+    <Content
+      title="Library"
+      operation={
+        <Button
+          type="primary"
+          onClick={() => {
+            router.push("/book/add");
+          }}
+        >
+          Add Book
+        </Button>
+      }
+    >
       <Form
         name="search"
         form={form}
@@ -229,6 +243,6 @@ export default function Home() {
           }}
         />
       </div>
-    </>
+    </Content>
   );
 }

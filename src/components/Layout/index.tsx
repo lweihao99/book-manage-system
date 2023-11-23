@@ -22,33 +22,6 @@ import { useRouter } from "next/router";
 
 const { Header, Content, Sider } = AntdLayout;
 
-const items1: MenuProps["items"] = ["1", "2", "3"].map((key) => ({
-  key,
-  label: `nav ${key}`,
-}));
-
-const items2: MenuProps["items"] = [
-  UserOutlined,
-  LaptopOutlined,
-  NotificationOutlined,
-].map((icon, index) => {
-  const key = String(index + 1);
-
-  return {
-    key: `sub${key}`,
-    icon: React.createElement(icon),
-    label: `subnav ${key}`,
-
-    children: new Array(4).fill(null).map((_, j) => {
-      const subKey = index * 4 + j + 1;
-      return {
-        key: subKey,
-        label: `option${subKey}`,
-      };
-    }),
-  };
-});
-
 const ITEMS = [
   {
     key: `book`,
@@ -118,6 +91,8 @@ export const Layout: React.FC<PropsWithChildren> = ({ children }) => {
     router.push(key); // 跳转到key路由
   };
 
+  const activeMenu = router.pathname;
+
   return (
     <>
       <Head>
@@ -149,12 +124,14 @@ export const Layout: React.FC<PropsWithChildren> = ({ children }) => {
               </Dropdown>
             </span>
           </Header>
+
           <AntdLayout className={styles.sectionInner}>
             <Sider width={200}>
               <Menu
                 mode="inline"
                 defaultSelectedKeys={["1"]}
                 defaultOpenKeys={["sub1"]}
+                selectedKeys={[activeMenu]} // 被选中的菜单等于路由当前的地址
                 style={{ height: "100%", borderRight: 0 }}
                 items={ITEMS}
                 onClick={HandleMenuClick}

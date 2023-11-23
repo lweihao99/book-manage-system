@@ -6,3 +6,14 @@ export interface BookQueryType {
   current?: number;
   pageSize?: number;
 }
+
+// 定义表单类型
+export interface BookType {
+  name: string;
+  author: string;
+  category: string;
+  cover: string;
+  publishAt: number;
+  stock: number;
+  description: string;
+}
