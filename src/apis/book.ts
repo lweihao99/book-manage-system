@@ -12,3 +12,7 @@ export async function getBookList(params?: BookQueryType) {
 export async function bookAdd(params: BookType) {
   return request.post("/api/books", params); // 添加
 }
+
+export async function bookDelete(id: number) {
+  return request.delete(`/api/books/${id}`);
+}

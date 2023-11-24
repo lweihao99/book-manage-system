@@ -10,6 +10,7 @@ import {
   TablePaginationConfig,
   Image,
   Tooltip,
+  message,
 } from "antd";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -17,10 +18,11 @@ import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 
 import styles from "./index.module.css";
-import { getBookList } from "@/apis/book";
+import { bookDelete, getBookList } from "@/apis/book";
 import { BookQueryType } from "@/type";
 import Content from "@/components/Content";
 
+// 列表名以及定位
 const COLUMNS = [
   {
     title: "Name",
@@ -95,16 +97,19 @@ export default function Home() {
   });
   const [total, setTotal] = useState(0);
 
-  useEffect(() => {
-    async function fetchData() {
-      const res = await getBookList({
-        current: 1,
-        pageSize: pagination.pageSize,
-      });
+  async function fetchData(search?: BookQueryType) {
+    const res = await getBookList({
+      current: pagination.current,
+      pageSize: pagination.pageSize,
+      ...search,
+    });
 
-      const { data } = res;
-      setData(data);
-    }
+    const { data } = res;
+    setData(data);
+  }
+
+  // 数据请求接口，以及列表渲染
+  useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -117,7 +122,6 @@ export default function Home() {
       current: 1,
       pageSize: pagination.pageSize,
     });
-    console.log(res.data);
     setData(res.data);
     setPagination({ ...pagination, current: 1, total: res.total });
   };
@@ -132,6 +136,7 @@ export default function Home() {
     router.push("/book/edit/id");
   };
 
+  // 控制改变页面渲染元素数量
   const handleTableChange = (pagination: TablePaginationConfig) => {
     setPagination(pagination);
 
@@ -145,6 +150,14 @@ export default function Home() {
     });
   };
 
+  // 删除操作控制
+  const handleBookDelete = async (id: string) => {
+    await bookDelete(id); // 进行删除请求
+    message.success("Delete Success");
+    fetchData(form.getFieldValue()); //获取表单参数
+  };
+
+  // 修改/删除操作列表
   const columns = [
     ...COLUMNS,
     {
@@ -156,7 +169,13 @@ export default function Home() {
             <Button type="link" onClick={handleBookEdit}>
               Edit
             </Button>
-            <Button danger type="link">
+            <Button
+              danger
+              type="link"
+              onClick={() => {
+                handleBookDelete(row._id);
+              }}
+            >
               Delete
             </Button>
           </Space>
