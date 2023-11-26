@@ -139,7 +139,7 @@ export default function Home() {
 
   // 点击Edit之后，执行路由
   const handleBookEdit = (id: string) => {
-    router.push(`/book/edit/id${id}`);
+    router.push(`/book/edit/${id}`);
   };
 
   // 控制改变页面渲染元素数量

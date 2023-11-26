@@ -46,7 +46,7 @@ const ITEMS = [
   {
     key: `borrow`,
     // icon: React.createElement(icon),
-    label: `Book lending`,
+    label: `Borrow`,
 
     children: [
       { label: `Lending list`, key: `/borrow` },
