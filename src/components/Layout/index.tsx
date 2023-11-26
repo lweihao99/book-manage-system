@@ -29,8 +29,8 @@ const ITEMS = [
     label: `Library manage`,
 
     children: [
-      { label: `book category`, key: `/book` },
-      { label: `book add`, key: `/book/add` }, // key 改成路由，这样在点击之后就会跳转到指定路由
+      { label: `Book Category`, key: `/book` },
+      { label: `Add Book`, key: `/book/add` }, // key 改成路由，这样在点击之后就会跳转到指定路由
     ],
   },
   {
@@ -39,8 +39,8 @@ const ITEMS = [
     label: `Category management`,
 
     children: [
-      { label: `Category list`, key: `/category` },
-      { label: `Category adding`, key: `/category/add` }, // key 改成路由，这样在点击之后就会跳转到指定路由
+      { label: `Category List`, key: `/category` },
+      { label: `Add Category`, key: `/category/add` }, // key 改成路由，这样在点击之后就会跳转到指定路由
     ],
   },
   {
@@ -49,18 +49,18 @@ const ITEMS = [
     label: `Borrow`,
 
     children: [
-      { label: `Lending list`, key: `/borrow` },
-      { label: `add Lending `, key: `/borrow/add` }, // key 改成路由，这样在点击之后就会跳转到指定路由
+      { label: `Borrow list`, key: `/borrow` },
+      { label: `Book Lending `, key: `/borrow/add` }, // key 改成路由，这样在点击之后就会跳转到指定路由
     ],
   },
   {
     key: `user`,
     // icon: React.createElement(icon),
-    label: `User management`,
+    label: `Profile management`,
 
     children: [
       { label: `User list`, key: `/user` },
-      { label: `User adding`, key: `/user/add` }, // key 改成路由，这样在点击之后就会跳转到指定路由
+      { label: `Add User`, key: `/user/add` }, // key 改成路由，这样在点击之后就会跳转到指定路由
     ],
   },
 ];
