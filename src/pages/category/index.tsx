@@ -85,9 +85,8 @@ export default function Category() {
     showSizeChanger: true, //改变每页pageSize
     total: 0,
   });
-  const [total, setTotal] = useState(0);
 
-  // 请求函数
+  // 请求函数获取页面数据
   async function fetchData(values?: any) {
     const res = await getCategoryList({
       current: pagination.current,
@@ -97,6 +96,7 @@ export default function Category() {
 
     const { data } = res;
     setData(data);
+    setPagination({ ...pagination, total: res.total });
   }
 
   // 第一次请求
@@ -124,8 +124,8 @@ export default function Category() {
   };
 
   // 点击Edit之后，执行路由
-  const handleCategoryEdit = () => {
-    router.push("/category/edit/id");
+  const handleCategoryEdit = (id: string) => {
+    router.push(`/category/edit/${id}`);
   };
 
   const handleTableChange = (pagination: TablePaginationConfig) => {
@@ -163,7 +163,12 @@ export default function Category() {
       render: (_: any, row: any) => {
         return (
           <Space>
-            <Button type="link" onClick={handleCategoryEdit}>
+            <Button
+              type="link"
+              onClick={() => {
+                handleCategoryEdit(row._id);
+              }}
+            >
               Edit
             </Button>
             <Button

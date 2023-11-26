@@ -19,8 +19,9 @@ import dayjs from "dayjs";
 
 import styles from "./index.module.css";
 import { bookDelete, getBookList } from "@/apis/book";
-import { BookQueryType } from "@/type";
+import { BookQueryType, CategoryType } from "@/type";
 import Content from "@/components/Content";
+import { getCategoryList } from "@/apis/category";
 
 // 列表名以及定位
 const COLUMNS = [
@@ -87,6 +88,7 @@ export default function Home() {
 
   // 跟踪获取的数据
   const [data, setData] = useState([]);
+  const [categoryList, setCategoryList] = useState<CategoryType[]>([]);
 
   // 跟踪每一页元素的情况,并且useState通过TablePaginationConfig指定了状态变量类型
   const [pagination, setPagination] = useState<TablePaginationConfig>({
@@ -95,9 +97,9 @@ export default function Home() {
     showSizeChanger: true, //改变每页pageSize
     total: 0,
   });
-  const [total, setTotal] = useState(0);
 
   async function fetchData(search?: BookQueryType) {
+    // 获取图书列表页面数据
     const res = await getBookList({
       current: pagination.current,
       pageSize: pagination.pageSize,
@@ -106,11 +108,15 @@ export default function Home() {
 
     const { data } = res;
     setData(data);
+    setPagination({ ...pagination, total: res.total });
   }
 
   // 数据请求接口，以及列表渲染
   useEffect(() => {
     fetchData();
+    getCategoryList({ all: true }).then((res) => {
+      setCategoryList(res.data);
+    }); // 获取分类名
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -132,8 +138,8 @@ export default function Home() {
   };
 
   // 点击Edit之后，执行路由
-  const handleBookEdit = () => {
-    router.push("/book/edit/id");
+  const handleBookEdit = (id: string) => {
+    router.push(`/book/edit/id${id}`);
   };
 
   // 控制改变页面渲染元素数量
@@ -166,7 +172,12 @@ export default function Home() {
       render: (_: any, row: any) => {
         return (
           <Space>
-            <Button type="link" onClick={handleBookEdit}>
+            <Button
+              type="link"
+              onClick={() => {
+                handleBookEdit(row._id);
+              }}
+            >
               Edit
             </Button>
             <Button
@@ -227,12 +238,10 @@ export default function Home() {
                 showSearch
                 allowClear
                 placeholder="category"
-                options={[
-                  { value: "jack", label: "Jack" },
-                  { value: "lucy", label: "Lucy" },
-                  { value: "Yiminghe", label: "yiminghe" },
-                  { value: "disabled", label: "Disabled", disabled: true },
-                ]}
+                options={categoryList.map((item) => ({
+                  label: item.name,
+                  value: item._id,
+                }))}
               />
             </Form.Item>
           </Col>

@@ -7,5 +7,5 @@ import BookForm from "@/components/BookForm";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
-  return <BookForm />;
+  return <BookForm title="Book Edit" />;
 }

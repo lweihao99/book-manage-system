@@ -1,37 +1,30 @@
-import React, { useState } from "react";
-import { PlusOutlined } from "@ant-design/icons";
+import React, { useEffect, useState } from "react";
 import {
   Button,
-  Cascader,
-  Checkbox,
-  ColorPicker,
   DatePicker,
   Form,
   Input,
   InputNumber,
-  Radio,
   Select,
-  Slider,
-  Switch,
-  TreeSelect,
-  Upload,
   Image,
   message,
 } from "antd";
 import { bookAdd } from "@/apis/book";
-import { BookType } from "@/type";
+import { BookType, CategoryType } from "@/type";
 import { useRouter } from "next/router";
 import styles from "./index.module.css";
 import dayjs from "dayjs";
 import Content from "../Content";
+import { getCategoryList } from "@/apis/category";
 
 const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 
-export default function BookForm() {
+export default function BookForm({ title }: { title: string }) {
   const [preview, setPreview] = useState("");
   const [form] = Form.useForm(); // 拿到form实例并绑定
   const router = useRouter();
+  const [categoryList, setCategoryList] = useState<CategoryType[]>([]);
 
   // 获取所有表单数据
   const handleFinish = async (values: BookType) => {
@@ -43,9 +36,15 @@ export default function BookForm() {
     router.push("/book");
   };
 
+  useEffect(() => {
+    getCategoryList({ all: true }).then((res) => {
+      setCategoryList(res.data);
+    });
+  }, []);
+
   return (
     // 对于Content 来说，form是一个子节点children
-    <Content title="Book Add">
+    <Content title={title}>
       <Form
         form={form}
         labelCol={{ span: 4 }}
@@ -53,6 +52,7 @@ export default function BookForm() {
         layout="horizontal"
         onFinish={handleFinish}
       >
+        {/* book name input */}
         <Form.Item
           label="Book name"
           name="name"
@@ -60,6 +60,8 @@ export default function BookForm() {
         >
           <Input placeholder="Please enter name" />
         </Form.Item>
+
+        {/* author name input */}
         <Form.Item
           label="Author"
           name="author"
@@ -67,15 +69,23 @@ export default function BookForm() {
         >
           <Input placeholder="Please enter name" />
         </Form.Item>
+
+        {/* category select */}
         <Form.Item
           label="Category"
           name="category"
           rules={[{ required: true, message: "please select category" }]}
         >
-          <Select placeholder="Please select">
-            <Select.Option value="demo">Demo</Select.Option>
-          </Select>
+          <Select
+            placeholder="Please select"
+            options={categoryList.map((item) => ({
+              label: item.name,
+              value: item._id,
+            }))}
+          ></Select>
         </Form.Item>
+
+        {/* cover image url input */}
         <Form.Item label="Cover" name="cover">
           <Input.Group compact>
             <Input
@@ -96,21 +106,28 @@ export default function BookForm() {
             </Button>
           </Input.Group>
         </Form.Item>
+
+        {/* cover image preview */}
         {preview && (
           <Form.Item label=" " colon={false}>
             <Image src={preview} width={100} height={100} alt=""></Image>
           </Form.Item>
         )}
+
+        {/* choose publish date */}
         <Form.Item label="Publishing date" name="publishAt">
           <DatePicker placeholder="Please select date" />
         </Form.Item>
         <Form.Item label="Stock" name="stock">
           <InputNumber placeholder="Please enter number" />
         </Form.Item>
+
+        {/* Book description area */}
         <Form.Item label="Description" name="description">
           <TextArea rows={4} placeholder="Please enter description" />
         </Form.Item>
 
+        {/* create button */}
         <Form.Item label=" " colon={false}>
           <Button
             size="large"
