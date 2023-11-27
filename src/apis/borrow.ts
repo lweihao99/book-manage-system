@@ -16,3 +16,12 @@ export async function borrowAdd(params: BorrowType) {
 export async function borrowDelete(id: number) {
   return request.delete(`/api/borrows/${id}`);
 }
+
+// 获取详情
+export async function getBorrowDetails(id: number) {
+  return request.get(`/api/borrows/${id}`);
+}
+
+export async function borrowUpdate(params: BorrowType) {
+  return request.put(`/api/borrows/`, params);
+}

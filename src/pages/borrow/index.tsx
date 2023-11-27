@@ -184,11 +184,12 @@ export default function Borrow() {
           <Space>
             <Button
               type="link"
+              disabled={!(row.status === "on")}
               onClick={() => {
                 handleBorrowEdit(row._id);
               }}
             >
-              Edit
+              RETURN
             </Button>
             <Button
               danger
