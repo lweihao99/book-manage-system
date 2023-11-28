@@ -36,6 +36,7 @@ export default function BookForm({ title }: { title: string }) {
     router.push("/book");
   };
 
+  // 获取分类名
   useEffect(() => {
     getCategoryList({ all: true }).then((res) => {
       setCategoryList(res.data);

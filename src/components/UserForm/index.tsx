@@ -40,12 +40,6 @@ export default function UserForm({
     router.push("/user");
   };
 
-  useEffect(() => {
-    getCategoryList({ all: true }).then((res) => {
-      setCategoryList(res.data);
-    });
-  }, []);
-
   return (
     // 对于Content 来说，form是一个子节点children
     <Content title={title}>
