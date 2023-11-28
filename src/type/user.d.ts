@@ -10,4 +10,7 @@ export interface UserType {
   status: "on" | "off";
   nickName: string;
   _id?: string;
+  gender: USER_GENDER.MALE;
+  role: USER_ROLE.USER;
+  status: USER_STATUS.ON;
 }

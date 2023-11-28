@@ -1,5 +1,5 @@
-import CategoryForm from "@/components/CategoryForm";
+import UserForm from "@/components/UserForm";
 
-export default function CategoryAdd() {
-  return <CategoryForm title="Add User" />;
+export default function UserAdd() {
+  return <UserForm title="Add User" />;
 }

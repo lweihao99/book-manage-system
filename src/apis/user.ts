@@ -8,17 +8,22 @@ export async function getUserList(params?: UserQueryType) {
   return request.get(`/api/users?${qs.stringify(params)}`); // 返回一个promise
 }
 
+// 获取用户详情
+export async function getUserDetail(id: string) {
+  return request.get(`/api/users/${id}`);
+}
+
 // 发送，添加新创建的书籍
 export async function userAdd(params: UserType) {
   return request.post("/api/users", params); // 添加
 }
 
 // 删除数据
-export async function userDelete(id: number) {
+export async function userDelete(id: string) {
   return request.delete(`/api/users/${id}`);
 }
 
-// 更新数据
+// 更新/上传数据
 export async function userUpdate(params: UserType) {
-  return request.put(`/api/users/`, params);
+  return request.put(`/api/users`, params);
 }
