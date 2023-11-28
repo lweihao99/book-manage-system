@@ -19,10 +19,8 @@ export default function UserForm({
   title: string;
   editData?: Partial<UserType>; // 部分
 }) {
-  const [preview, setPreview] = useState("");
   const [form] = Form.useForm(); // 拿到form实例并绑定
   const router = useRouter();
-  const [categoryList, setCategoryList] = useState<CategoryType[]>([]);
 
   // 手动给表单set值
   useEffect(() => {
