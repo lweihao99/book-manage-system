@@ -16,8 +16,6 @@ import styles from "./index.module.css";
 import dayjs from "dayjs";
 import Content from "../Content";
 import { getCategoryList } from "@/apis/category";
-
-const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 
 export default function BookForm({ title }: { title: string }) {
