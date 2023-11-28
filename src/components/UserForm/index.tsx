@@ -1,20 +1,8 @@
 import React, { useEffect, useState } from "react";
-import {
-  Button,
-  DatePicker,
-  Form,
-  Input,
-  InputNumber,
-  Select,
-  Image,
-  message,
-  Radio,
-} from "antd";
-import { bookAdd } from "@/apis/book";
-import { BookType, CategoryType, UserType } from "@/type";
+import { Button, Form, Input, message, Radio } from "antd";
+import { CategoryType, UserType } from "@/type";
 import { useRouter } from "next/router";
 import styles from "./index.module.css";
-import dayjs from "dayjs";
 import Content from "../Content";
 import { getCategoryList } from "@/apis/category";
 import { userAdd, userUpdate } from "@/apis/user";
