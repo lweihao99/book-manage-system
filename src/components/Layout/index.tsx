@@ -1,24 +1,14 @@
-import React, { PropsWithChildren, ReactNode } from "react";
+import React, { PropsWithChildren } from "react";
 import Image from "next/image";
 import Head from "next/head";
-import {
-  LaptopOutlined,
-  NotificationOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
 import type { MenuProps } from "antd";
-import {
-  Breadcrumb,
-  Layout as AntdLayout,
-  Menu,
-  theme,
-  Dropdown,
-  Space,
-} from "antd";
-import { DownOutlined, SmileOutlined } from "@ant-design/icons";
+import { Layout as AntdLayout, Menu, Dropdown, Space, message } from "antd";
+import { DownOutlined } from "@ant-design/icons";
 
 import styles from "./index.module.css";
 import { useRouter } from "next/router";
+import { userLogout } from "@/apis/user";
+import Link from "next/link";
 
 const { Header, Content, Sider } = AntdLayout;
 
@@ -65,18 +55,6 @@ const ITEMS = [
   },
 ];
 
-// menu items
-const USER_ITEMS: MenuProps["items"] = [
-  {
-    key: "1",
-    label: "Profile Details",
-  },
-  {
-    key: "2",
-    label: "Log Out",
-  },
-];
-
 // export function Layout({ children }: { children: ReactNode }) {
 export const Layout: React.FC<PropsWithChildren> = ({ children }) => {
   const router = useRouter();
@@ -91,6 +69,28 @@ export const Layout: React.FC<PropsWithChildren> = ({ children }) => {
     router.push(key); // 跳转到key路由
   };
 
+  // menu items
+  const USER_ITEMS: MenuProps["items"] = [
+    {
+      key: "1",
+      label: <Link href="/user/edit/id">Profile Details</Link>,
+    }, // 根据获取到的 ID 进入用户编辑页面
+    {
+      key: "2",
+      label: (
+        <span
+          onClick={async () => {
+            await userLogout();
+            message.success("Log Out Successfully!");
+            router.push("/login");
+          }}
+        >
+          Logout
+        </span>
+      ),
+    },
+  ];
+
   const activeMenu = router.pathname;
 
   return (
@@ -104,6 +104,7 @@ export const Layout: React.FC<PropsWithChildren> = ({ children }) => {
 
       <main className={`${styles.main} `}>
         <AntdLayout>
+          {/* 头部 */}
           <Header className={styles.header}>
             <Image
               src="/logo.svg"
@@ -113,6 +114,7 @@ export const Layout: React.FC<PropsWithChildren> = ({ children }) => {
               className={styles.logo}
             ></Image>
             Book Manage System
+            {/* 左上小菜单栏 */}
             <span className={styles.user}>
               <Dropdown menu={{ items: USER_ITEMS }}>
                 <a onClick={(e) => e.preventDefault()}>
@@ -126,6 +128,7 @@ export const Layout: React.FC<PropsWithChildren> = ({ children }) => {
           </Header>
 
           <AntdLayout className={styles.sectionInner}>
+            {/* 边栏菜单 */}
             <Sider width={200}>
               <Menu
                 mode="inline"
@@ -137,6 +140,8 @@ export const Layout: React.FC<PropsWithChildren> = ({ children }) => {
                 onClick={HandleMenuClick}
               />
             </Sider>
+
+            {/* 内容 */}
             <AntdLayout className={styles.sectionContent}>
               <Content className={styles.content}>{children}</Content>
             </AntdLayout>

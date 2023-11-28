@@ -27,3 +27,13 @@ export async function userDelete(id: string) {
 export async function userUpdate(params: UserType) {
   return request.put(`/api/users`, params);
 }
+
+// 登录请求
+export async function userLogin(params: Pick<UserType, "name" | "password">) {
+  return request.post("/api/login", params);
+}
+
+// 登出
+export async function userLogout() {
+  return request.get("/api/logout");
+}

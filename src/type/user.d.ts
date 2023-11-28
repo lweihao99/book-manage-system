@@ -7,6 +7,7 @@ export interface UserQueryType {
 
 export interface UserType {
   name: string;
+  password: string;
   status: "on" | "off";
   nickName: string;
   _id?: string;
