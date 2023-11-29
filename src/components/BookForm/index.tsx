@@ -9,7 +9,7 @@ import {
   Image,
   message,
 } from "antd";
-import { bookAdd } from "@/apis/book";
+import { bookAdd, bookUpdate } from "@/apis/book";
 import { BookType, CategoryType } from "@/type";
 import { useRouter } from "next/router";
 import styles from "./index.module.css";
@@ -18,21 +18,23 @@ import Content from "../Content";
 import { getCategoryList } from "@/apis/category";
 const { TextArea } = Input;
 
-export default function BookForm({ title }: { title: string }) {
+export default function BookForm({
+  title,
+  data,
+}: {
+  title: string;
+  data: BookType;
+}) {
   const [preview, setPreview] = useState("");
   const [form] = Form.useForm(); // 拿到form实例并绑定
   const router = useRouter();
   const [categoryList, setCategoryList] = useState<CategoryType[]>([]);
 
-  // 获取所有表单数据
-  const handleFinish = async (values: BookType) => {
-    if (values.publishAt) {
-      values.publishAt = dayjs(values.publishAt).valueOf(); // 将日期改为时间戳
+  useEffect(() => {
+    if (data?._id) {
+      form.setFieldValue(data);
     }
-    await bookAdd(values);
-    message.success("Create Success");
-    router.push("/book");
-  };
+  }, [data, form]);
 
   // 获取分类名
   useEffect(() => {
@@ -40,6 +42,23 @@ export default function BookForm({ title }: { title: string }) {
       setCategoryList(res.data);
     });
   }, []);
+
+  // 获取所有表单数据
+  const handleFinish = async (values: BookType) => {
+    if (values.publishAt) {
+      values.publishAt = dayjs(values.publishAt).valueOf(); // 将日期改为时间戳
+    }
+
+    if (data?._id) {
+      await bookUpdate(data?._id, values);
+    } else {
+      await bookAdd(values);
+    }
+
+    await bookAdd(values);
+    message.success("Create Success");
+    router.push("/book");
+  };
 
   return (
     // 对于Content 来说，form是一个子节点children
@@ -70,7 +89,7 @@ export default function BookForm({ title }: { title: string }) {
         </Form.Item>
 
         {/* category select */}
-        <Form.Item
+        {/* <Form.Item
           label="Category"
           name="category"
           rules={[{ required: true, message: "please select category" }]}
@@ -82,7 +101,7 @@ export default function BookForm({ title }: { title: string }) {
               value: item._id,
             }))}
           ></Select>
-        </Form.Item>
+        </Form.Item> */}
 
         {/* cover image url input */}
         <Form.Item label="Cover" name="cover">
@@ -117,6 +136,8 @@ export default function BookForm({ title }: { title: string }) {
         <Form.Item label="Publishing date" name="publishAt">
           <DatePicker placeholder="Please select date" />
         </Form.Item>
+
+        {/* Book stock */}
         <Form.Item label="Stock" name="stock">
           <InputNumber placeholder="Please enter number" />
         </Form.Item>
@@ -134,7 +155,7 @@ export default function BookForm({ title }: { title: string }) {
             htmlType="submit"
             className={styles.btn}
           >
-            Create
+            {data?._id ? "Update" : " Create"}
           </Button>
         </Form.Item>
       </Form>

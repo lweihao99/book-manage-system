@@ -16,3 +16,11 @@ export async function bookAdd(params: BookType) {
 export async function bookDelete(id: number) {
   return request.delete(`/api/books/${id}`);
 }
+
+export async function getBookDetail(id: string) {
+  return request.get(`/api/books/${id}`);
+}
+
+export async function bookUpdate(id: string, params: BookType) {
+  return request.put(`/api/books/${id}`, params);
+}
