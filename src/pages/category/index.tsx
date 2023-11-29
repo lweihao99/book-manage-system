@@ -53,7 +53,7 @@ const COLUMNS = [
     },
   },
   {
-    title: "Category",
+    title: "Parent Category",
     dataIndex: "parent",
     key: "parent",
     width: 120,
@@ -197,7 +197,7 @@ export default function Category() {
             router.push("/category/add");
           }}
         >
-          Add Book
+          Add Category
         </Button>
       }
     >
@@ -214,7 +214,7 @@ export default function Category() {
         {/* 将行分成24网格，并且每一个列站5个位置 */}
         <Row gutter={24}>
           <Col span={5}>
-            <Form.Item name="name" label="Book name">
+            <Form.Item name="name" label="Category name">
               <Input placeholder="Please enter a book name" allowClear />
             </Form.Item>
           </Col>

@@ -51,12 +51,13 @@ export default function BookForm({
 
     if (data?._id) {
       await bookUpdate(data?._id, values);
+      message.success("Update Success");
     } else {
       await bookAdd(values);
+      message.success("Create Success");
     }
 
-    await bookAdd(values);
-    message.success("Create Success");
+    // await bookAdd(values);
     router.push("/book");
   };
 

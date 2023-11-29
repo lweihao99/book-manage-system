@@ -16,3 +16,11 @@ export async function categoryAdd(params: CategoryType) {
 export async function categoryDelete(id: string) {
   return request.delete(`/api/categories/${id}`);
 }
+
+export async function getCategoryDetail(id: string) {
+  return request.get(`/api/categories/${id}`);
+}
+
+export async function categoryUpdate(id: string, params: CategoryType) {
+  return request.put(`/api/categories/${id}`, params);
+}

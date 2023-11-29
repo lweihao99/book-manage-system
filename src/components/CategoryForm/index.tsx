@@ -5,9 +5,15 @@ import { useRouter } from "next/router";
 import styles from "./index.module.css";
 import Content from "../Content";
 import { LEVEL_OPTION } from "@/pages/category";
-import { categoryAdd, getCategoryList } from "@/apis/category";
+import { categoryAdd, categoryUpdate, getCategoryList } from "@/apis/category";
 
-export default function CategoryForm({ title }: { title: string }) {
+export default function CategoryForm({
+  title,
+  data,
+}: {
+  title: string;
+  data: CategoryType;
+}) {
   const [level, setLevel] = useState(1);
   const [levelOneList, setLevelOneList] = useState<CategoryType[]>([]);
   const [form] = Form.useForm(); // 拿到form实例并绑定
@@ -15,10 +21,22 @@ export default function CategoryForm({ title }: { title: string }) {
 
   // 获取所有表单数据
   const handleFinish = async (values: CategoryType) => {
-    await categoryAdd(values);
-    message.success("Create Success");
+    if (data?._id) {
+      await categoryUpdate(data?._id, values);
+      message.success("Update Success");
+    } else {
+      await categoryAdd(values);
+      message.success("Create Success");
+    }
+    // await categoryAdd(values);
     router.push("/category");
   };
+
+  useEffect(() => {
+    if (data?._id) {
+      form.setFieldValue({ ...data });
+    }
+  }, [data, form]);
 
   // 初始化获取一级分类数据
   useEffect(() => {
@@ -68,11 +86,12 @@ export default function CategoryForm({ title }: { title: string }) {
             }}
             placeholder="Please Select"
             options={LEVEL_OPTION}
+            disabled={!!(data?.level == 2)}
           ></Select>
         </Form.Item>
 
         {/* parent category */}
-        {level === 2 && (
+        {(level === 2 || data?.level === 2) && (
           <Form.Item
             label="Parent category"
             name="parent"
@@ -93,7 +112,7 @@ export default function CategoryForm({ title }: { title: string }) {
             htmlType="submit"
             className={styles.btn}
           >
-            Create
+            {data?._id ? "Update" : " Create"}
           </Button>
         </Form.Item>
       </Form>
