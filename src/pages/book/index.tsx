@@ -143,17 +143,18 @@ export default function Home() {
   };
 
   // 控制改变页面渲染元素数量
-  const handleTableChange = (pagination: TablePaginationConfig) => {
+  const handleTableChange = async (pagination: TablePaginationConfig) => {
     setPagination(pagination);
 
     const query = form.getFieldValue();
 
     // 页面发生变化后重新获取
-    getBookList({
+    const res = await getBookList({
       current: pagination.current,
       pageSize: pagination.pageSize,
       ...query,
     });
+    setData(res.data);
   };
 
   // 删除操作控制
@@ -227,11 +228,15 @@ export default function Home() {
               <Input placeholder="Please enter a book name" allowClear />
             </Form.Item>
           </Col>
+
+          {/* author search */}
           <Col span={5}>
             <Form.Item name="author" label="Author">
               <Input placeholder="Please enter a name" allowClear />
             </Form.Item>
           </Col>
+
+          {/* category search */}
           <Col span={5}>
             <Form.Item name="category" label="Category">
               <Select
@@ -245,6 +250,8 @@ export default function Home() {
               />
             </Form.Item>
           </Col>
+
+          {/* buttons */}
           <Col span={9}>
             <Form.Item>
               <Space>
@@ -258,6 +265,8 @@ export default function Home() {
             </Form.Item>
           </Col>
         </Row>
+
+        {/* content */}
       </Form>
       <div className={styles.tableWrap}>
         <Table
