@@ -115,7 +115,7 @@ export default function BookForm({ title }: { title: string }) {
 
         {/* choose publish date */}
         <Form.Item label="Publishing date" name="publishAt">
-          {/* <DatePicker placeholder="Please select date" /> */}
+          <DatePicker placeholder="Please select date" />
         </Form.Item>
         <Form.Item label="Stock" name="stock">
           <InputNumber placeholder="Please enter number" />
