@@ -373,7 +373,7 @@ ansi-styles@^4.1.0:
   dependencies:
     color-convert "^2.0.1"
 
-antd@^5.11.5:
+antd@^5.2.3:
   version "5.11.5"
   resolved "https://registry.npmjs.org/antd/-/antd-5.11.5.tgz"
   integrity sha512-qB1YmvO4Zm4r48M0Ptxn7orpaXeMPSeTrrw6dAgtTYN+ysnWD/D/zlxFc5g73GywIzZ10XGqvNC+74A+HD0yeQ==
@@ -2312,7 +2312,7 @@ react-is@^18.2.0:
   resolved "https://registry.npmjs.org/react-is/-/react-is-18.2.0.tgz"
   integrity sha512-xWGDIW6x921xtzPkhiULtthJHoJvBbF3q26fzloPCK0hsvxtPVelvftw3zjbHWSkR2km9Z+4uxbDDK/6Zw9B8w==
 
-react@*, "react@^16.8.0 || ^17.0.0 || ^18.0.0", react@^18.2.0, "react@>= 16.0.0", "react@>= 16.8.0 || 17.x.x || ^18.0.0-0", react@>=16.0.0, react@>=16.11.0, react@>=16.9.0:
+react@*, "react@^16.8.0 || ^17.0.0 || ^18.0.0", react@^18.2.0, "react@>= 16.0.0", "react@>= 16.8.0 || 17.x.x || ^18.0.0-0", react@>=16.0.0, react@>=16.11.0, react@>=16.9.0, react@18.2.0:
   version "18.2.0"
   resolved "https://registry.npmjs.org/react/-/react-18.2.0.tgz"
   integrity sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==
