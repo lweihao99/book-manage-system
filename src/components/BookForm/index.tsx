@@ -32,6 +32,8 @@ export default function BookForm({
 
   useEffect(() => {
     if (data?._id) {
+      data.publishAt = dayjs(data.publishAt).format("YYYY-MM-DD");
+      data.category = data.category._id;
       form.setFieldValue(data);
     }
   }, [data, form]);
@@ -90,7 +92,7 @@ export default function BookForm({
         </Form.Item>
 
         {/* category select */}
-        {/* <Form.Item
+        <Form.Item
           label="Category"
           name="category"
           rules={[{ required: true, message: "please select category" }]}
@@ -102,7 +104,7 @@ export default function BookForm({
               value: item._id,
             }))}
           ></Select>
-        </Form.Item> */}
+        </Form.Item>
 
         {/* cover image url input */}
         <Form.Item label="Cover" name="cover">

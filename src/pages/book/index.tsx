@@ -51,6 +51,9 @@ const COLUMNS = [
     dataIndex: "category",
     key: "category",
     width: 80,
+    render: (text: string) => {
+      return text?.name;
+    },
   },
   {
     title: "description",
