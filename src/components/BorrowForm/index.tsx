@@ -4,10 +4,16 @@ import styles from "./index.module.css";
 import { useEffect, useState } from "react";
 import { getUserList } from "@/apis/user";
 import { getBookList } from "@/apis/book";
-import { BorrowType } from "@/type";
+import { BookType, BorrowType, UserType } from "@/type";
 import { borrowAdd, borrowUpdate } from "@/apis/borrow";
 
-export default function BorrowForm({ title, editData }: { title: string }) {
+export default function BorrowForm({
+  title,
+  editData,
+}: {
+  title: string;
+  editData?: any;
+}) {
   const [form] = Form.useForm();
   const [userList, setUserList] = useState([]);
   const [bookList, setBookList] = useState([]);
@@ -19,7 +25,7 @@ export default function BorrowForm({ title, editData }: { title: string }) {
     getUserList().then((res) => {
       setUserList(res.data);
     });
-    getBookList().then((res) => {
+    getBookList({ all: true }).then((res) => {
       setBookList(res.data);
     });
   }, []);
@@ -27,7 +33,7 @@ export default function BorrowForm({ title, editData }: { title: string }) {
   // 点击创建按钮
   const handleFinish = async (values: BorrowType) => {
     try {
-      if (editData?.id) {
+      if (editData?._id) {
         // 通过编辑按钮传过来的
         await borrowUpdate(values);
         message.success("编辑成功");
@@ -42,7 +48,7 @@ export default function BorrowForm({ title, editData }: { title: string }) {
   };
 
   // 检查库存
-  const handleBookStockChange = (value, options) => {
+  const handleBookStockChange = (options: any) => {
     setStock(options.stock);
   };
 
@@ -64,7 +70,7 @@ export default function BorrowForm({ title, editData }: { title: string }) {
           <Select
             onChange={handleBookStockChange}
             placeholder="Please select book"
-            options={bookList.map((item) => ({
+            options={bookList.map((item: BookType) => ({
               label: item.name,
               value: item._id,
               stock: item.stock,
@@ -80,7 +86,7 @@ export default function BorrowForm({ title, editData }: { title: string }) {
         >
           <Select
             placeholder="Please select"
-            options={userList.map((item) => ({
+            options={userList.map((item: UserType) => ({
               label: item.name,
               value: item._id,
             }))}

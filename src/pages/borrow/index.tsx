@@ -132,7 +132,7 @@ export default function Borrow() {
       pageSize: pagination.pageSize,
     });
 
-    const newData = res.data.map((item) => ({
+    const newData = res.data.map((item: any) => ({
       ...item,
       bookName: item.book.name,
       borrowUser: item.user.nickName,
@@ -156,7 +156,7 @@ export default function Borrow() {
   const handleTableChange = (pagination: TablePaginationConfig) => {
     setPagination(pagination);
 
-    const query = form.getFieldValue();
+    const query = form.getFieldsValue();
 
     // 页面发生变化后重新获取
     getBorrowList({
@@ -170,7 +170,7 @@ export default function Borrow() {
   const handleBorrowDelete = async (id: string) => {
     await borrowDelete(id); // 进行删除请求
     message.success("Delete Success");
-    fetchData(form.getFieldValue()); //获取表单参数
+    fetchData(form.getFieldsValue()); //获取表单参数
   };
 
   // 修改/删除操作列表

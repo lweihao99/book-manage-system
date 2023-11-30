@@ -140,7 +140,7 @@ export default function User() {
   const handleTableChange = (pagination: TablePaginationConfig) => {
     setPagination(pagination);
 
-    const query = form.getFieldValue();
+    const query = form.getFieldsValue();
 
     // 页面发生变化后重新获取
     getUserList({
@@ -154,11 +154,11 @@ export default function User() {
   const handleUserDelete = async (id: string) => {
     await userDelete(id); // 进行删除请求
     message.success("Delete Success");
-    fetchData(form.getFieldValue()); //获取表单参数
+    fetchData(form.getFieldsValue()); //获取表单参数
   };
 
   // 状态控制
-  const handleStatusChange = async (row) => {
+  const handleStatusChange = async (row: any) => {
     const status = row.status === STATUS.ON ? STATUS.OFF : STATUS.ON;
 
     await userUpdate({
@@ -168,7 +168,7 @@ export default function User() {
 
     message.success("Update Success");
 
-    fetchData(form.getFieldValue());
+    fetchData(form.getFieldsValue());
   };
 
   // 修改/删除操作列表

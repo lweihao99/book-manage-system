@@ -25,7 +25,7 @@ export default function UserForm({
   // 手动给表单set值
   useEffect(() => {
     if (editData._id) {
-      form.setFieldValue(editData);
+      form.setFieldsValue(editData);
     }
   }, [editData, form]);
 

@@ -16,4 +16,5 @@ export interface BorrowType {
   borrowAt: number;
   backAt: number;
   user: any; //todo
+  _id: string;
 }

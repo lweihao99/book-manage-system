@@ -11,7 +11,7 @@ export default function BorrowAdd() {
 
   useEffect(() => {
     if (router.query.id) {
-      getBorrowDetails(router.query.id).then((res) => {
+      getBorrowDetails(router.query.id as string).then((res) => {
         setData(res.data);
       });
     }

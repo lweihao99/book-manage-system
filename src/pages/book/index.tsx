@@ -146,7 +146,7 @@ export default function Home() {
   const handleTableChange = (pagination: TablePaginationConfig) => {
     setPagination(pagination);
 
-    const query = form.getFieldValue();
+    const query = form.getFieldsValue();
 
     // 页面发生变化后重新获取
     getBookList({
@@ -160,7 +160,7 @@ export default function Home() {
   const handleBookDelete = async (id: string) => {
     await bookDelete(id); // 进行删除请求
     message.success("Delete Success");
-    fetchData(form.getFieldValue()); //获取表单参数
+    fetchData(form.getFieldsValue()); //获取表单参数
   };
 
   // 修改/删除操作列表

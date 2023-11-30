@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React, { PropsWithChildren, ReactNode } from "react";
 import styles from "./index.module.css";
 
 /**
@@ -6,15 +6,21 @@ import styles from "./index.module.css";
  * @param operation 会将每个页面的按钮作为参数接收过来
  * @returns
  */
-export default function Content({
-  children,
-  title,
-  operation,
-}: {
-  children: ReactNode;
-  title: string;
-  operation: ReactNode;
-}) {
+// export default function Content({
+//   children,
+//   title,
+//   operation,
+// }: {
+//   children: ReactNode;
+//   title: string;
+//   operation: ReactNode;
+// }) {
+const Content: React.FC<
+  PropsWithChildren & {
+    operation?: ReactNode;
+    title: string;
+  }
+> = ({ children, operation, title }) => {
   return (
     <>
       <div className={styles.title}>
@@ -24,4 +30,6 @@ export default function Content({
       <div className={styles.content}>{children}</div>
     </>
   );
-}
+};
+
+export default Content;
