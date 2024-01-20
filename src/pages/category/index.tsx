@@ -131,7 +131,7 @@ export default function Category() {
   const handleTableChange = (pagination: TablePaginationConfig) => {
     setPagination(pagination);
 
-    const query = form.getFieldValue();
+    const query = form.getFieldsValue();
 
     // 页面发生变化后重新获取
     getCategoryList({
@@ -150,7 +150,7 @@ export default function Category() {
       async onOk() {
         await categoryDelete(id); // 删除接口
         message.success("Delete success");
-        fetchData(form.getFieldValue()); // 获取搜索栏表单数据
+        fetchData(form.getFieldsValue()); // 获取搜索栏表单数据
       },
     });
   };
