@@ -13,7 +13,7 @@ export async function bookAdd(params: BookType) {
   return request.post("/api/books", params); // 添加
 }
 
-export async function bookDelete(id: number) {
+export async function bookDelete(id: string) {
   return request.delete(`/api/books/${id}`);
 }
 

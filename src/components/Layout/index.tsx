@@ -1,4 +1,4 @@
-import React, { PropsWithChildren } from "react";
+import React, { PropsWithChildren, useEffect, useState } from "react";
 import Image from "next/image";
 import Head from "next/head";
 import type { MenuProps } from "antd";
@@ -58,6 +58,7 @@ const ITEMS = [
 // export function Layout({ children }: { children: ReactNode }) {
 export const Layout: React.FC<PropsWithChildren> = ({ children }) => {
   const router = useRouter();
+  const [user, setUser] = useState({});
 
   // 定义这是Menu的一个方法
   const HandleMenuClick: MenuProps["onClick"] = ({
@@ -95,14 +96,15 @@ export const Layout: React.FC<PropsWithChildren> = ({ children }) => {
   const activeMenu = router.pathname;
 
   // 获取缓存数据
-  let user = null;
-  // 判断现在时在客户端还是在服务端避免访问不了缓存数据, 服务端读取不了window变量
-  if (typeof window !== "undefined") {
-    const userStorage = sessionStorage.getItem("user");
-    if (userStorage) {
-      user = JSON.parse(userStorage);
+  useEffect(() => {
+    // 判断现在时在客户端还是在服务端避免访问不了缓存数据, 服务端读取不了window变量
+    if (typeof window !== "undefined") {
+      const userStorage = sessionStorage.getItem("user");
+      if (userStorage) {
+        setUser(JSON.parse(userStorage));
+      }
     }
-  }
+  }, []);
 
   return (
     <>
@@ -130,7 +132,7 @@ export const Layout: React.FC<PropsWithChildren> = ({ children }) => {
               <Dropdown menu={{ items: USER_ITEMS }}>
                 <a onClick={(e) => e.preventDefault()}>
                   <Space>
-                    {user?.nickName ? user?.nickName : "Username"}
+                    {user?.info?.nickName ? user?.info?.nickName : "Username"}
                     <DownOutlined />
                   </Space>
                 </a>

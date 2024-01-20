@@ -38,6 +38,9 @@ const CreateAxiosInstance = (
   // 请求拦截器
   instance.interceptors.request.use(
     function (config) {
+      const userStorage = sessionStorage.getItem("user");
+      const token = userStorage ? JSON.parse(userStorage).token : "";
+      config.headers["Authorization"] = "Bearer " + token; // 给标头添加token信息
       return config;
     },
     function (error) {
