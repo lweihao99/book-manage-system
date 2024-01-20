@@ -15,3 +15,8 @@ export enum USER_STATUS {
   ON = "on",
   OFF = "off",
 }
+
+export enum BORROW_STATUS {
+  ON = "on",
+  OFF = "off",
+}

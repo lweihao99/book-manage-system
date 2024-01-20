@@ -25,18 +25,19 @@ export default function UserForm({
   // 手动给表单set值
   useEffect(() => {
     if (editData._id) {
-      form.setFieldValue(editData);
+      form.setFieldsValue(editData);
     }
   }, [editData, form]);
 
   // 获取所有表单数据
   const handleFinish = async (values: UserType) => {
     if (editData?._id) {
-      await userUpdate(values);
+      await userUpdate(editData._id, values);
+      message.success("Update Success");
     } else {
       await userAdd(values);
+      message.success("Create Success");
     }
-    message.success("Create Success");
     router.push("/user");
   };
 
@@ -82,10 +83,12 @@ export default function UserForm({
         </Form.Item>
 
         {/* password input */}
-        <Form.Item label="Password" name="password">
-          <Input.Group compact>
-            <Input.Password placeholder="Please enter password" />
-          </Input.Group>
+        <Form.Item
+          label="Password"
+          name="password"
+          rules={[{ required: true, message: "please enter your password" }]}
+        >
+          <Input placeholder="Please enter username" type="password" />
         </Form.Item>
 
         {/* status select */}
@@ -112,7 +115,7 @@ export default function UserForm({
             htmlType="submit"
             className={styles.btn}
           >
-            Create
+            {editData?._id ? "Update" : "Create"}
           </Button>
         </Form.Item>
       </Form>

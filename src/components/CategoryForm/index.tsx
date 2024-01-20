@@ -34,7 +34,7 @@ export default function CategoryForm({
 
   useEffect(() => {
     if (data?._id) {
-      form.setFieldValue({ ...data });
+      form.setFieldsValue({ ...data });
     }
   }, [data, form]);
 

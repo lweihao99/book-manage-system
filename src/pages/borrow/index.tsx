@@ -9,7 +9,9 @@ import {
   TablePaginationConfig,
   message,
   Tag,
+  Modal,
 } from "antd";
+import { ExclamationCircleFilled } from "@ant-design/icons";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
@@ -19,7 +21,7 @@ import styles from "./index.module.css";
 import { BookType, BorrowQueryType, BorrowType } from "@/type";
 import Content from "@/components/Content";
 import { getBookList } from "@/apis/book";
-import { getBorrowList, borrowDelete } from "@/apis/borrow";
+import { getBorrowList, borrowDelete, borrowBack } from "@/apis/borrow";
 
 const STATUS_OPTIONS = [
   {
@@ -80,18 +82,63 @@ export default function Borrow() {
   const [form] = Form.useForm();
   const router = useRouter();
 
-  // 跟踪获取的数据
   const [data, setData] = useState([]);
   const [bookList, setBookList] = useState<BookType[]>([]);
   const [userList, setUserList] = useState<any[]>([]); // todo ts type
 
-  // 跟踪每一页元素的情况,并且useState通过TablePaginationConfig指定了状态变量类型
+  // 跟踪每一页元素的情况
   const [pagination, setPagination] = useState<TablePaginationConfig>({
     current: 1,
     pageSize: 20, // 每页显示的元素
     showSizeChanger: true, //改变每页pageSize
     total: 0,
   });
+
+  // 修改/删除操作列表
+  const columns = [
+    ...COLUMNS,
+    {
+      title: "Action",
+      key: "action",
+      render: (_: any, row: BorrowType) => {
+        return (
+          <Space>
+            {row.status === BORROW_STATUS.ON ? (
+              <Button
+                type="link"
+                disabled={!(row.status === "on")}
+                onClick={() => {
+                  handleBorrowBack(row._id);
+                }}
+              >
+                RETURN
+              </Button>
+            ) : (
+              <Button
+                type="link"
+                block
+                onClick={() => {
+                  router.push(`/borrow/edit/${row._id}`);
+                }}
+              >
+                Edit
+              </Button>
+            )}
+
+            <Button
+              danger
+              type="link"
+              onClick={() => {
+                handleBorrowDelete(row._id);
+              }}
+            >
+              Delete
+            </Button>
+          </Space>
+        );
+      },
+    },
+  ];
 
   async function fetchData(search?: BorrowQueryType) {
     // 获取借阅列表页面数据
@@ -104,7 +151,7 @@ export default function Borrow() {
     const newData = res.data.map((item: BorrowType) => ({
       ...item,
       bookName: item.book.name,
-      borrowUser: item.user.nickName,
+      borrowUser: item.user.nickName, // todo
       status: item.user.status,
     }));
 
@@ -148,15 +195,25 @@ export default function Borrow() {
   };
 
   // 点击Edit之后，执行路由
-  const handleBorrowEdit = (id: string) => {
-    router.push(`/borrow/edit/${id}`);
+  const handleBorrowBack = (id: string) => {
+    Modal.confirm({
+      title: "Are you sure?",
+      icon: <ExclamationCircleFilled />,
+      okText: "Confirm",
+      cancelText: "Cancel",
+      async onOk() {
+        await borrowBack(id);
+        message.success("Returned");
+        fetchData(form.getFieldsValue());
+      },
+    });
   };
 
   // 控制改变页面渲染元素数量
   const handleTableChange = (pagination: TablePaginationConfig) => {
     setPagination(pagination);
 
-    const query = form.getFieldValue();
+    const query = form.getFieldsValue();
 
     // 页面发生变化后重新获取
     getBorrowList({
@@ -170,41 +227,8 @@ export default function Borrow() {
   const handleBorrowDelete = async (id: string) => {
     await borrowDelete(id); // 进行删除请求
     message.success("Delete Success");
-    fetchData(form.getFieldValue()); //获取表单参数
+    fetchData(form.getFieldsValue()); //获取表单参数
   };
-
-  // 修改/删除操作列表
-  const columns = [
-    ...COLUMNS,
-    {
-      title: "Action",
-      key: "action",
-      render: (_: any, row: any) => {
-        return (
-          <Space>
-            <Button
-              type="link"
-              disabled={!(row.status === "on")}
-              onClick={() => {
-                handleBorrowEdit(row._id);
-              }}
-            >
-              RETURN
-            </Button>
-            <Button
-              danger
-              type="link"
-              onClick={() => {
-                handleBorrowDelete(row._id);
-              }}
-            >
-              Delete
-            </Button>
-          </Space>
-        );
-      },
-    },
-  ];
 
   // 页面
   return (

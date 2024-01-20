@@ -25,3 +25,7 @@ export async function getBorrowDetails(id: number) {
 export async function borrowUpdate(params: BorrowType) {
   return request.put(`/api/borrows/`, params);
 }
+
+export const borrowBack = (id: string) => {
+  return request.put(`/api/borrows/back/${id}`);
+};

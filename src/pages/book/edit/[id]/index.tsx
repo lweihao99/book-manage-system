@@ -9,7 +9,7 @@ export default function BookEdit() {
 
   useEffect(() => {
     const fetch = async () => {
-      const { id } = router.query;
+      const { id } = router.query; // 获取查询id
       if (id) {
         const res = await getBookDetail(id as string);
         setData(res.data);

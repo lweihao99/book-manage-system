@@ -81,6 +81,7 @@ export const Layout: React.FC<PropsWithChildren> = ({ children }) => {
         <span
           onClick={async () => {
             await userLogout();
+            sessionStorage.removeItem("user");
             message.success("Log Out Successfully!");
             router.push("/login");
           }}
@@ -92,6 +93,16 @@ export const Layout: React.FC<PropsWithChildren> = ({ children }) => {
   ];
 
   const activeMenu = router.pathname;
+
+  // 获取缓存数据
+  let user = null;
+  // 判断现在时在客户端还是在服务端避免访问不了缓存数据, 服务端读取不了window变量
+  if (typeof window !== "undefined") {
+    const userStorage = sessionStorage.getItem("user");
+    if (userStorage) {
+      user = JSON.parse(userStorage);
+    }
+  }
 
   return (
     <>
@@ -119,7 +130,7 @@ export const Layout: React.FC<PropsWithChildren> = ({ children }) => {
               <Dropdown menu={{ items: USER_ITEMS }}>
                 <a onClick={(e) => e.preventDefault()}>
                   <Space>
-                    Profile
+                    {user?.nickName ? user?.nickName : "Username"}
                     <DownOutlined />
                   </Space>
                 </a>

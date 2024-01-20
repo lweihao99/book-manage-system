@@ -34,7 +34,7 @@ export default function BookForm({
     if (data?._id) {
       data.publishAt = dayjs(data.publishAt).format("YYYY-MM-DD");
       data.category = data.category._id;
-      form.setFieldValue(data);
+      form.setFieldsValue(data);
     }
   }, [data, form]);
 

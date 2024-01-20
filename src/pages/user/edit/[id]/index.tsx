@@ -9,13 +9,13 @@ export default function UserEdit() {
 
   // 根据用户ID获取信息
   const [data, setData] = useState();
+
   useEffect(() => {
-    if (id) {
-      getUserDetail(id).then((res) => {
-        setData(res.data);
-      });
-    }
-  }, [id]);
+    (async () => {
+      const res = await getUserDetail(router.query.id as string);
+      setData(res.data);
+    })();
+  }, [router.query.id]);
 
   return <UserForm title="User Edit" editData={data} />;
 }

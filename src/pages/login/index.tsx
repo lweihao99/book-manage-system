@@ -9,11 +9,20 @@ export default function Login() {
 
   // 请求登录
   const handleFinish = async (values: { name: string; password: string }) => {
-    const res = await userLogin(values);
+    try {
+      const res = await userLogin(values);
+      console.log("🚀 ~ handleFinish ~ res:", res);
 
-    if (res.data.status === "on") {
+      // user 登录成功后缓存响应数据
+      sessionStorage.setItem(
+        "user",
+        JSON.stringify({ info: res.data, token: res.token })
+      );
+
       message.success("登录成功");
       router.push("/book");
+    } catch (error) {
+      console.error(error);
     }
   };
 

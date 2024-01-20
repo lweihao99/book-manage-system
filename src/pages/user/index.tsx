@@ -10,14 +10,16 @@ import {
   message,
   Tag,
   Input,
+  Modal,
 } from "antd";
+import { ExclamationCircleFilled } from "@ant-design/icons";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 import dayjs from "dayjs";
 
 import styles from "./index.module.css";
-import { BookType, BorrowQueryType, BorrowType } from "@/type";
+import { BookType, BorrowQueryType, BorrowType, UserType } from "@/type";
 import Content from "@/components/Content";
 import { getBookList } from "@/apis/book";
 import { getUserList, userDelete, userUpdate } from "@/apis/user";
@@ -63,9 +65,9 @@ const COLUMNS = [
     },
   },
   {
-    title: "Borrow Date",
-    dataIndex: "borrowAt",
-    key: "borrowAt",
+    title: "Create Date",
+    dataIndex: "createdAt",
+    key: "createdAt",
     width: 130,
     render: (text: string) => dayjs(text).format("YYYY-MM-DD"),
   },
@@ -79,7 +81,8 @@ export default function User() {
   // 跟踪获取的数据
   const [data, setData] = useState([]);
   const [bookList, setBookList] = useState<BookType[]>([]);
-  const [userList, setUserList] = useState<any[]>([]); // todo ts type
+  const [userList, setUserList] = useState<any[]>([]);
+  const [editData, setEditData] = useState<Partial<BookType>>({});
 
   // 跟踪每一页元素的情况,并且useState通过TablePaginationConfig指定了状态变量类型
   const [pagination, setPagination] = useState<TablePaginationConfig>({
@@ -88,6 +91,48 @@ export default function User() {
     showSizeChanger: true, //改变每页pageSize
     total: 0,
   });
+
+  // 修改/删除操作列表
+  const columns = [
+    ...COLUMNS,
+    {
+      title: "Action",
+      key: "action",
+      render: (_: any, row: any) => {
+        return (
+          <Space>
+            <Button
+              type="link"
+              onClick={() => {
+                setEditData(row);
+                router.push(`/user/edit/${row._id}`);
+              }}
+            >
+              Edit
+            </Button>
+            <Button
+              type="link"
+              danger={row.status === STATUS.ON ? true : false}
+              onClick={() => {
+                handleStatusChange(row);
+              }}
+            >
+              {row.status === STATUS.ON ? "DISABLE" : "ACTIVE"}
+            </Button>
+            <Button
+              danger
+              type="link"
+              onClick={() => {
+                handleDeleteModal(row._id);
+              }}
+            >
+              Delete
+            </Button>
+          </Space>
+        );
+      },
+    },
+  ];
 
   async function fetchData(search?: BorrowQueryType) {
     // 获取借阅列表页面数据
@@ -101,6 +146,21 @@ export default function User() {
     setData(data);
     setPagination({ ...pagination, total: res.total });
   }
+
+  // 删除提醒
+  const handleDeleteModal = (_id: string) => {
+    Modal.confirm({
+      title: "Are you sure to delete?",
+      icon: <ExclamationCircleFilled />,
+      okText: "Confirm",
+      cancelText: "Cancel",
+      async onOk() {
+        await userDelete(_id);
+        message.success("Delete success.");
+        fetchData(form.getFieldsValue());
+      },
+    });
+  };
 
   // 数据请求接口，以及列表渲染
   useEffect(() => {
@@ -128,89 +188,27 @@ export default function User() {
 
   // submit之后，初始化输入框
   const handleSearchReset = () => {
-    form.resetFields(); // initialValues
-  };
-
-  // 点击Edit之后，执行路由
-  const handleUserEdit = (id: string) => {
-    router.push(`/user/edit/${id}`);
+    form.resetFields();
   };
 
   // 控制改变页面渲染元素数量
   const handleTableChange = (pagination: TablePaginationConfig) => {
     setPagination(pagination);
-
-    const query = form.getFieldValue();
-
-    // 页面发生变化后重新获取
-    getUserList({
-      current: pagination.current,
-      pageSize: pagination.pageSize,
-      ...query,
-    });
   };
 
-  // 删除操作控制
-  const handleUserDelete = async (id: string) => {
-    await userDelete(id); // 进行删除请求
-    message.success("Delete Success");
-    fetchData(form.getFieldValue()); //获取表单参数
-  };
-
-  // 状态控制
-  const handleStatusChange = async (row) => {
+  // user状态控制
+  const handleStatusChange = async (row: UserType) => {
     const status = row.status === STATUS.ON ? STATUS.OFF : STATUS.ON;
 
-    await userUpdate({
+    await userUpdate(row._id as string, {
       ...row,
       status,
     });
 
     message.success("Update Success");
 
-    fetchData(form.getFieldValue());
+    fetchData(form.getFieldsValue());
   };
-
-  // 修改/删除操作列表
-  const columns = [
-    ...COLUMNS,
-    {
-      title: "Action",
-      key: "action",
-      render: (_: any, row: any) => {
-        return (
-          <Space>
-            <Button
-              type="link"
-              onClick={() => {
-                handleUserEdit(row._id);
-              }}
-            >
-              Edit
-            </Button>
-            <Button
-              type="link"
-              danger={row.status === STATUS.ON ? true : false}
-              onClick={() => {
-                handleStatusChange(row);
-              }}
-            >
-              {row.status === STATUS.ON ? "DISABLE" : "ACTIVE"}
-            </Button>
-            <Button
-              danger
-              type="link"
-              onClick={() => {
-                handleUserDelete(row._id);
-              }}
-            >
-              Delete
-            </Button>
-          </Space>
-        );
-      },
-    },
-  ];
 
   // 页面
   return (
@@ -223,7 +221,7 @@ export default function User() {
             router.push("/user/add");
           }}
         >
-          Add Borrow
+          Add User
         </Button>
       }
     >
