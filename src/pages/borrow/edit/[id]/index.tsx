@@ -3,7 +3,7 @@ import BorrowForm from "@/components/BorrowForm";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
-export default function BorrowAdd() {
+const BorrowBook: React.FC<any> = () => {
   // get id
   const router = useRouter();
 
@@ -11,11 +11,13 @@ export default function BorrowAdd() {
 
   useEffect(() => {
     if (router.query.id) {
-      getBorrowDetails(router.query.id).then((res) => {
+      getBorrowDetails(router.query.id as string).then((res) => {
         setData(res.data);
       });
     }
   }, [router.query.id]);
 
   return <BorrowForm title="Edit Borrow" editData={data} />;
-}
+};
+
+export default BorrowBook;

@@ -13,16 +13,19 @@ import {
 } from "antd";
 import { ExclamationCircleFilled } from "@ant-design/icons";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import dayjs from "dayjs";
 
 import styles from "./index.module.css";
-import { BookType, BorrowQueryType, BorrowType } from "@/type";
+import { BookType, BorrowQueryType, BorrowType, CategoryType } from "@/type";
 import { BORROW_STATUS } from "@/constant/user";
 import Content from "@/components/Content";
 import { getBookList } from "@/apis/book";
 import { getBorrowList, borrowDelete, borrowBack } from "@/apis/borrow";
+import { getCategoryList } from "@/apis/category";
+
+const Option = Select.Option;
 
 const STATUS_OPTIONS = [
   {
@@ -41,40 +44,54 @@ const COLUMNS = [
     title: "Name",
     dataIndex: "bookName",
     key: "bookName",
-    width: 200,
+    ellipsis: true,
+    width: 300,
   },
   {
     title: "Status",
     dataIndex: "status",
     key: "status",
-    width: 80,
+    ellipsis: true,
+    width: 100,
     render: (text: string) => {
       return text === "on" ? (
-        <Tag color="red">Lending</Tag>
+        <Tag color="red">Borrow</Tag>
       ) : (
         <Tag color="green">Return</Tag>
       );
     },
   },
   {
+    title: "Author",
+    dataIndex: "author",
+    key: "author",
+    width: 150,
+  },
+  {
     title: "Borrower",
     dataIndex: "borrowUser",
     key: "borrowUser",
-    width: 80,
+    width: 150,
+  },
+  {
+    title: "Category",
+    dataIndex: "category",
+    key: "category",
+    width: 150,
   },
   {
     title: "Borrow Date",
     dataIndex: "borrowAt",
     key: "borrowAt",
-    width: 130,
+    width: 200,
     render: (text: string) => dayjs(text).format("YYYY-MM-DD"),
   },
   {
     title: "Return Date",
     dataIndex: "backAt",
     key: "backAt",
-    width: 130,
-    render: (text: string) => dayjs(text).format("YYYY-MM-DD"),
+    width: 200,
+    render: (text: string) => (text ? dayjs(text).format("YYYY-MM-DD") : "-"),
   },
 ];
 
@@ -85,14 +102,15 @@ export default function Borrow() {
 
   const [data, setData] = useState([]);
   const [bookList, setBookList] = useState<BookType[]>([]);
-  const [userList, setUserList] = useState<any[]>([]); // todo ts type
+  const [userList, setUserList] = useState<any[]>([]);
+  const [total, setTotal] = useState(0);
+  const [categoryList, setCategoryList] = useState<CategoryType[]>([]);
 
   // 跟踪每一页元素的情况
   const [pagination, setPagination] = useState<TablePaginationConfig>({
     current: 1,
     pageSize: 20, // 每页显示的元素
     showSizeChanger: true, //改变每页pageSize
-    total: 0,
   });
 
   // 修改/删除操作列表
@@ -100,6 +118,7 @@ export default function Borrow() {
     ...COLUMNS,
     {
       title: "Action",
+      dataIndex: "",
       key: "action",
       render: (_: any, row: BorrowType) => {
         return (
@@ -130,7 +149,7 @@ export default function Borrow() {
               danger
               type="link"
               onClick={() => {
-                handleBorrowDelete(row._id as string);
+                handleDeleteModal(row._id as string);
               }}
             >
               Delete
@@ -141,34 +160,43 @@ export default function Borrow() {
     },
   ];
 
-  async function fetchData(search?: BorrowQueryType) {
-    // 获取借阅列表页面数据
-    const res = await getBorrowList({
-      current: pagination.current,
-      pageSize: pagination.pageSize,
-      ...search,
-    });
+  const fetchData = useCallback(
+    (search?: BorrowQueryType) => {
+      // 获取借阅列表页面数据
+      const { book, user, author, status } = search || {};
+      const res = getBorrowList({
+        current: pagination.current as number,
+        pageSize: pagination.pageSize as number,
+        book,
+        author,
+        user,
+        status,
+      }).then((res) => {
+        const data = res.data.map((item: BorrowType) => ({
+          ...item,
+          bookName: item.book.name,
+          borrowUser: item.user?.nickName,
+          status: item.user?.status,
+        }));
+        setData(data);
+        setTotal(res.total);
+      });
+    },
+    [pagination]
+  );
 
-    const newData = res.data.map((item: BorrowType) => ({
-      ...item,
-      bookName: item.book.name,
-      borrowUser: item.user?.nickName,
-      status: item.user?.status,
-    }));
-
-    setData(newData);
-    setPagination({ ...pagination, total: res.total });
-  }
+  useEffect(() => {
+    fetchData();
+  }, [fetchData, pagination]);
 
   // 数据请求接口，以及列表渲染
   useEffect(() => {
-    fetchData();
-
-    // 获取所有的书籍列表
+    getCategoryList({ all: true }).then((res) => {
+      setCategoryList(res.data);
+    });
     getBookList({ all: true }).then((res) => {
       setBookList(res.data);
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // search点击之后
@@ -177,7 +205,7 @@ export default function Borrow() {
     const res = await getBorrowList({
       ...values,
       current: 1,
-      pageSize: pagination.pageSize,
+      pageSize: pagination.pageSize!,
     });
 
     const newData = res.data.map(
@@ -187,8 +215,6 @@ export default function Borrow() {
       }) => ({
         ...item,
         bookName: item.book.name,
-        borrowUser: item.user.nickName,
-        status: item.user.status,
       })
     );
     setData(newData);
@@ -216,7 +242,7 @@ export default function Borrow() {
   };
 
   // 删除操作控制
-  const handleBorrowDelete = (id: string) => {
+  const handleDeleteModal = (id: string) => {
     Modal.confirm({
       title: "Are you sure to delete?",
       icon: <ExclamationCircleFilled />,
@@ -248,16 +274,16 @@ export default function Borrow() {
   return (
     <Content
       title="Borrow List"
-      operation={
-        <Button
-          type="primary"
-          onClick={() => {
-            router.push("/borrow/add");
-          }}
-        >
-          Add Borrow
-        </Button>
-      }
+      // operation={
+      //   <Button
+      //     type="primary"
+      //     onClick={() => {
+      //       router.push("/borrow/add");
+      //     }}
+      //   >
+      //     Add Borrow
+      //   </Button>
+      // }
     >
       {/* search 区域 */}
       <Form
@@ -287,20 +313,24 @@ export default function Borrow() {
           </Col>
           <Col span={5}>
             <Form.Item name="status" label="Status">
-              <Select allowClear options={STATUS_OPTIONS}></Select>
+              <Select
+                allowClear
+                showSearch
+                placeholder="Select"
+                optionFilterProp="label"
+                options={STATUS_OPTIONS}
+              ></Select>
             </Form.Item>
           </Col>
           <Col span={5}>
-            <Form.Item name="user" label="Borrower">
-              <Select
-                showSearch
-                allowClear
-                placeholder="Borrower"
-                options={userList.map((item) => ({
-                  label: item.name,
-                  value: item._id,
-                }))}
-              />
+            <Form.Item name="category" label="Category">
+              <Select placeholder="Please Select" allowClear>
+                {categoryList.map((category) => (
+                  <Option key={category._id} value={category._id}>
+                    {category.name}
+                  </Option>
+                ))}
+              </Select>
             </Form.Item>
           </Col>
           <Col span={9}>
@@ -326,7 +356,8 @@ export default function Borrow() {
           onChange={handleTableChange}
           pagination={{
             ...pagination,
-            showTotal: () => `there are ${pagination.total} result`,
+            total: total,
+            showTotal: () => `there are ${pagination.total} results`,
           }}
         />
       </div>
