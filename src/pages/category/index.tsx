@@ -48,7 +48,7 @@ const COLUMNS = [
     dataIndex: "level",
     key: "level",
     width: 120,
-    render: (text: string) => {
+    render: (text: number) => {
       return <Tag color={text === 1 ? "green" : "cyan"}>{`Level ${text}`}</Tag>;
     },
   },

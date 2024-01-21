@@ -14,6 +14,7 @@ export interface BorrowQueryType {
 
 // 定义表单类型
 export interface BorrowType {
+  _id?: string;
   book: BookType;
   borrowAt: number;
   backAt: number;

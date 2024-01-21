@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 export default function BookEdit() {
   const router = useRouter();
-  const [data, setData] = useState({});
+  const [data, setData] = useState();
 
   useEffect(() => {
     const fetch = async () => {

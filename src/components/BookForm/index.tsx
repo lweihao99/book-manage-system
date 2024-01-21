@@ -10,7 +10,7 @@ import {
   message,
 } from "antd";
 import { bookAdd, bookUpdate } from "@/apis/book";
-import { BookType, CategoryType } from "@/type";
+import { BookFormType, BookType, CategoryType } from "@/type";
 import { useRouter } from "next/router";
 import styles from "./index.module.css";
 import dayjs from "dayjs";
@@ -18,23 +18,24 @@ import Content from "../Content";
 import { getCategoryList } from "@/apis/category";
 const { TextArea } = Input;
 
-export default function BookForm({
-  title,
-  data,
-}: {
-  title: string;
-  data: BookType;
-}) {
+const BookForm: React.FC<BookFormType> = ({ title, data }) => {
   const [preview, setPreview] = useState("");
+  const [categoryList, setCategoryList] = useState<CategoryType[]>([]);
   const [form] = Form.useForm(); // 拿到form实例并绑定
   const router = useRouter();
-  const [categoryList, setCategoryList] = useState<CategoryType[]>([]);
 
   useEffect(() => {
-    if (data?._id) {
-      data.publishAt = dayjs(data.publishAt).format("YYYY-MM-DD");
-      data.category = data.category._id;
-      form.setFieldsValue(data);
+    if (data) {
+      const editData = {
+        ...DataTransfer,
+        category: data.category
+          ? (data.category as unknown as CategoryType)._id
+          : undefined,
+        publishAt: data.publishAt
+          ? dayjs(data.publishAt).format("YYYY-MM-DD")
+          : undefined,
+      };
+      form.setFieldsValue(editData);
     }
   }, [data, form]);
 
@@ -164,4 +165,6 @@ export default function BookForm({
       </Form>
     </Content>
   );
-}
+};
+
+export default BookForm;

@@ -19,12 +19,21 @@ import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 
 import styles from "./index.module.css";
-import { BookType, BorrowQueryType, BorrowType, UserType } from "@/type";
+import {
+  BookType,
+  BorrowQueryType,
+  BorrowType,
+  UserQueryType,
+  UserType,
+} from "@/type";
 import Content from "@/components/Content";
 import { getBookList } from "@/apis/book";
 import { getUserList, userDelete, userUpdate } from "@/apis/user";
 
-const STATUS = { ON: "on", OFF: "off" };
+enum STATUS {
+  ON = "on",
+  OFF = "off",
+}
 
 const STATUS_OPTIONS = [
   {
@@ -134,7 +143,7 @@ export default function User() {
     },
   ];
 
-  async function fetchData(search?: BorrowQueryType) {
+  async function fetchData(search?: UserQueryType) {
     // 获取借阅列表页面数据
     const res = await getUserList({
       current: pagination.current,
@@ -146,6 +155,17 @@ export default function User() {
     setData(data);
     setPagination({ ...pagination, total: res.total });
   }
+
+  // 数据请求接口，以及列表渲染
+  useEffect(() => {
+    fetchData();
+
+    // 获取所有的书籍列表
+    getBookList({ all: true }).then((res) => {
+      setBookList(res.data);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // 删除提醒
   const handleDeleteModal = (_id: string) => {
@@ -161,17 +181,6 @@ export default function User() {
       },
     });
   };
-
-  // 数据请求接口，以及列表渲染
-  useEffect(() => {
-    fetchData();
-
-    // 获取所有的书籍列表
-    getBookList({ all: true }).then((res) => {
-      setBookList(res.data);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   // search点击之后
   const handleSearchFinish = async (values: BorrowQueryType) => {
@@ -200,9 +209,9 @@ export default function User() {
   const handleStatusChange = async (row: UserType) => {
     const status = row.status === STATUS.ON ? STATUS.OFF : STATUS.ON;
 
-    await userUpdate(row._id as string, {
+    await userUpdate(row._id!, {
       ...row,
-      status,
+      status: status as STATUS,
     });
 
     message.success("Update Success");

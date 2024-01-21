@@ -13,7 +13,7 @@ export default function Content({
 }: {
   children: ReactNode;
   title: string;
-  operation: ReactNode;
+  operation?: ReactNode;
 }) {
   return (
     <>

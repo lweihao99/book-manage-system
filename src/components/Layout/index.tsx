@@ -58,7 +58,7 @@ const ITEMS = [
 // export function Layout({ children }: { children: ReactNode }) {
 export const Layout: React.FC<PropsWithChildren> = ({ children }) => {
   const router = useRouter();
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState({ info: { nickName: "" } });
 
   // 定义这是Menu的一个方法
   const HandleMenuClick: MenuProps["onClick"] = ({

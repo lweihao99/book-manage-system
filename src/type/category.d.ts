@@ -8,7 +8,9 @@ export interface CategoryQueryType {
 
 export interface CategoryType {
   name: string;
-  level: 1 | 2;
-  parent: CategoryType;
+  level: number;
   _id?: string;
+  parentLevel: string;
+  parent: CategoryType;
+  children: CategoryType[];
 }

@@ -19,6 +19,7 @@ import dayjs from "dayjs";
 
 import styles from "./index.module.css";
 import { BookType, BorrowQueryType, BorrowType } from "@/type";
+import { BORROW_STATUS } from "@/constant/user";
 import Content from "@/components/Content";
 import { getBookList } from "@/apis/book";
 import { getBorrowList, borrowDelete, borrowBack } from "@/apis/borrow";
@@ -108,7 +109,7 @@ export default function Borrow() {
                 type="link"
                 disabled={!(row.status === "on")}
                 onClick={() => {
-                  handleBorrowBack(row._id);
+                  handleBorrowBack(row._id as string);
                 }}
               >
                 RETURN
@@ -129,7 +130,7 @@ export default function Borrow() {
               danger
               type="link"
               onClick={() => {
-                handleBorrowDelete(row._id);
+                handleBorrowDelete(row._id as string);
               }}
             >
               Delete
@@ -179,12 +180,17 @@ export default function Borrow() {
       pageSize: pagination.pageSize,
     });
 
-    const newData = res.data.map((item) => ({
-      ...item,
-      bookName: item.book.name,
-      borrowUser: item.user.nickName,
-      status: item.user.status,
-    }));
+    const newData = res.data.map(
+      (item: {
+        book: { name: any };
+        user: { nickName: any; status: any };
+      }) => ({
+        ...item,
+        bookName: item.book.name,
+        borrowUser: item.user.nickName,
+        status: item.user.status,
+      })
+    );
     setData(newData);
     setPagination({ ...pagination, current: 1, total: res.total });
   };
@@ -209,6 +215,21 @@ export default function Borrow() {
     });
   };
 
+  // 删除操作控制
+  const handleBorrowDelete = (id: string) => {
+    Modal.confirm({
+      title: "Are you sure to delete?",
+      icon: <ExclamationCircleFilled />,
+      okText: "Confirm",
+      cancelText: "Cancel",
+      async onOk() {
+        await borrowDelete(id);
+        fetchData(form.getFieldsValue());
+        message.success("Delete success.");
+      },
+    });
+  };
+
   // 控制改变页面渲染元素数量
   const handleTableChange = (pagination: TablePaginationConfig) => {
     setPagination(pagination);
@@ -221,13 +242,6 @@ export default function Borrow() {
       pageSize: pagination.pageSize,
       ...query,
     });
-  };
-
-  // 删除操作控制
-  const handleBorrowDelete = async (id: string) => {
-    await borrowDelete(id); // 进行删除请求
-    message.success("Delete Success");
-    fetchData(form.getFieldsValue()); //获取表单参数
   };
 
   // 页面

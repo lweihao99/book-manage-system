@@ -13,12 +13,12 @@ export async function borrowAdd(params: BorrowType) {
   return request.post("/api/borrows", params); // 添加
 }
 
-export async function borrowDelete(id: number) {
+export async function borrowDelete(id: string) {
   return request.delete(`/api/borrows/${id}`);
 }
 
 // 获取详情
-export async function getBorrowDetails(id: number) {
+export async function getBorrowDetails(id: string) {
   return request.get(`/api/borrows/${id}`);
 }
 
