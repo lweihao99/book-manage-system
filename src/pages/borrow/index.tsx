@@ -152,8 +152,8 @@ export default function Borrow() {
     const newData = res.data.map((item: BorrowType) => ({
       ...item,
       bookName: item.book.name,
-      borrowUser: item.user.nickName, // todo
-      status: item.user.status,
+      borrowUser: item.user?.nickName,
+      status: item.user?.status,
     }));
 
     setData(newData);
